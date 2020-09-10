@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/app.css">
+    <title>Laboratorio Modulo 6 II - Extra</title>
+</head>
+<body>
+    <header>
+        <h2>Laboratorio Modulo 6 II - Extra</Laboratorio</h2>
+    </header>
+
+    <main>
+        <div>
+            <h3>Calculadora devolucion monedas</h3>
+            <div class="calculadora-container">
+                <div class="area-user-container">
+                    <div class="price-container">
+                        <button id="price-button" class="boton">Price</button>
+                        <span id="priceToPay" class="price">0</span>
+                    </div>
+                    <div class="user-coins-container" id="user-coins"></div>
+                    <div class="amount-container">
+                        <button class="boton" id="pay-button">Click to Pay</button>
+                        <span id="amountToPay">0</span>
+                    </div>
+                </div>
+                <div class="area-cash-container">
+                    <div class="cash-header-container">
+                        <h5>DISPONIBILIDAD BILLETES EN CAJA</h5>
+                    </div>
+                    <div class="cash-container" id="cash-coins"></div>
+                </div>
+            </div>
+            <div class="return-container">
+                <div>
+                    <h5 id="amountToReturn">Billetes y monedas a devolver</h5>
+                </div>
+                <div class="return-coins-container" id="returnCoinsContainer"></div>
+            </div>
+        </div>
+        <div class="sueldo-neto-container">
+            <h3>Calculadora devolucion monedas</h3>
+            <div class="sueldo-input-container">
+                <label for="GrossSalaryField"><b>Intruduzca salario bruto </b></label>
+                <input class="salary-field" type="text" id="GrossSalaryField" />
+                <button class="boton" id="salary-button">Calculate</button>
+            </div>
+            <div class="salary-calculation-result" id="calculationResult"></div>
+        </div>
+    </div>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
