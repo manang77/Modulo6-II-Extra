@@ -91,7 +91,7 @@ agendaProcess();
 const MAX_PRICE = 1000;
 
 var coins = {
-    euro500: {value: "500", unitsToPay: "0", stock: "10", img: "../img/Euro-500.jpg", width: "50", height: "25"},
+    euro500: {value: "500", unitsToPay: "0", stock: "10", img: "./img/Euro-500.jpg", width: "50", height: "25"},
     euro200: {value: "200", unitsToPay: "0", stock: "10", img: "./img/Euro-200.jpg", width: "50", height: "25"},
     euro100: {value: "100", unitsToPay: "0", stock: "10", img: "./img/Euro-100.jpg", width: "50", height: "25"},
     euro50: {value: "50", unitsToPay: "0", stock: "10", img: "./img/Euro-50.jpg", width: "50", height: "25"},
@@ -329,14 +329,14 @@ var generateSalaryReport = (grossSalaryAmount, socialSecurityAmount, irpfAmount)
     var lineContainer = document.getElementById("calculationResult");
     lineContainer.innerHTML = "";
 
-    var netSalary = grossSalaryAmount - socialSecurityAmount - irpfAmount;
+    var netSalary = (grossSalaryAmount - irpfAmount).toFixed(2);
 
-    lineContainer.appendChild(generateReportLine("Sueldo Bruto Anual...................: ", grossSalaryAmount));
+    lineContainer.appendChild(generateReportLine("Sueldo Bruto Anual:", grossSalaryAmount));
     lineContainer.appendChild(generateReportLine("Cantidad destinada a Seguridad Social: ", socialSecurityAmount));
-    lineContainer.appendChild(generateReportLine("Cantidad destinada a IRPF............: ", irpfAmount));
-    lineContainer.appendChild(generateReportLine("Salario Neto Anual...................: ", netSalary));
-    lineContainer.appendChild(generateReportLine("Salario Neto Mensual (12 pagas)......: ", (netSalary / 12).toFixed(2)));
-    lineContainer.appendChild(generateReportLine("Salario Neto Mensual (14 pagas)......: ", (netSalary / 14).toFixed(2)));
+    lineContainer.appendChild(generateReportLine("Cantidad destinada a IRPF: ", irpfAmount));
+    lineContainer.appendChild(generateReportLine("Salario Neto Anual: ", netSalary));
+    lineContainer.appendChild(generateReportLine("Salario Neto Mensual (12 pagas): ", (netSalary / 12).toFixed(2)));
+    lineContainer.appendChild(generateReportLine("Salario Neto Mensual (14 pagas): ", (netSalary / 14).toFixed(2)));
 
 }
 
