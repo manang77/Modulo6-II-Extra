@@ -221,22 +221,24 @@ var createCoinStock = coin => {
     return addContainer(quantityStock, "coins-stock");
 }
 
+//Evento asociado al change de los input de moneda
+var inputChangeEvent = (event, coins, coin) => {
+    var amountToPayField = document.getElementById("amountToPay");
+    coin.unitsToPay = event.target.value;
+    amountToPayField.innerText = calculateAmountToPay(coins).toFixed(2);    
+    //Mantener boton pay-button desactivado
+    var buttonToPay = document.getElementById("pay-button");
+    buttonToPay.disabled = enoughMoneyToPay();
+}
+
 //Crea un input para introducir en numero de monedas para pagar
-var createCoinQuantity = coin => {
+var createCoinQuantity = (coins, coin) => {
     var quantityInput = document.createElement("input");
     quantityInput.setAttribute("value", "0");
     quantityInput.setAttribute("type", "number");
     quantityInput.setAttribute("min","0");
 
-    quantityInput.addEventListener("change", (event) => {
-        var amountToPayField = document.getElementById("amountToPay");
-        coin.unitsToPay = event.target.value;
-        amountToPayField.innerText = calculateAmountToPay(coins).toFixed(2);
-        
-        //Mantener boton pay-button desactivado
-        var buttonToPay = document.getElementById("pay-button");
-        buttonToPay.disabled = enoughMoneyToPay();
-    });
+    quantityInput.addEventListener("change", (event) => {inputChangeEvent(event, coins, coin)});
     return addContainer(quantityInput, "coin-quantity");
 }
 
@@ -250,14 +252,14 @@ var createCoinImage = coin => {
 }
 
 //Genera una linea para una mondeda con su campo asociado (input o span)
-var createCoinLine = (coin, area) => {
+var createCoinLine = (coins, coin, area) => {
     //Crear contenedor para cada moneda
     var coinContainer = document.createElement("div");
     coinContainer.setAttribute("class", "coin-container");
     //Añadir a la linea de la moneda un imput o un span dependiendo del area en la que se visualice 
     coinContainer.appendChild(createCoinImage(coin));
     if (area === "user") {
-        coinContainer.appendChild(createCoinQuantity(coin));
+        coinContainer.appendChild(createCoinQuantity(coins, coin));
     } else {
         coinContainer.appendChild(createCoinStock(coin));
     }
@@ -268,7 +270,7 @@ var createCoinLine = (coin, area) => {
 var displayCoins = (coinsList, area) => {
     var container = document.getElementById(area + "-coins");
     for (coin in coins) {
-        container.appendChild(createCoinLine(coins[coin], area));
+        container.appendChild(createCoinLine(coins, coins[coin], area));
     }
 }
 
