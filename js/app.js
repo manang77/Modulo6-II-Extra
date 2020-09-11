@@ -116,22 +116,22 @@ var addContainer = (element, divClass) => {
     return elementContainer
 }
 
-var initializeCoinsSelection = () => {
+var initializeCoinsSelection = coinsList => {
     var listaCoinFields = document.getElementById("user-coins").getElementsByTagName("input");
     for (i = 0; i < listaCoinFields.length; i++) {
         listaCoinFields[i].value = 0;
     }
-    for (coin in coins) {
-        coins[coin].unitsToPay = "0";
+    for (coin in coinsList) {
+        coinsList[coin].unitsToPay = "0";
     } 
     var amountToPayField = document.getElementById("amountToPay");
     amountToPayField.innerText = "0.0";
 }
 
-var calculateAmountToPay = coins => {
+var calculateAmountToPay = coinsList => {
     var amountToPay = 0;
-    for (coin in coins) {
-        amountToPay += parseInt(coins[coin].unitsToPay) * parseFloat(coins[coin].value)
+    for (coin in coinsList) {
+        amountToPay += parseInt(coinsList[coin].unitsToPay) * parseFloat(coinsList[coin].value)
     }
     return amountToPay;
 }
@@ -143,46 +143,46 @@ var enoughMoneyToPay = () => (parseFloat(document.getElementById("amountToPay").
 var generateRadomPrice = () => (Math.random() * MAX_PRICE + 1).toFixed(2);
 
 //Proceso asociado al boton "price-button"
-var handlePriceButtonClick = () => {
+var handlePriceButtonClick = coinsList => {
     var priceToPayField = document.getElementById("priceToPay");
     document.getElementById("returnCoinsContainer").innerHTML = "";
-    initializeCoinsSelection();
+    initializeCoinsSelection(coinsList);
     priceToPayField.innerText = generateRadomPrice();
     document.getElementById("pay-button").disabled = true;
 }
 
 //Realiza el calculo de las monedas a devolver teniendo en cuenta la disponibilidad en caja
-var calculateCoinsToReturn = amount => {
-    var coinsList = [];
+var calculateCoinsToReturn = (coinsList, amount) => {
+    var coinsToReturnList = [];
     var pendingAmount = amount;
-    for (coin in coins) {
-        var coinValue = parseFloat(coins[coin].value);
+    for (coin in coinsList) {
+        var coinValue = parseFloat(coinsList[coin].value);
         if (coinValue <= pendingAmount) {
             var quantity = Math.floor(pendingAmount / coinValue);
             var coinQuantity = {    
                 coin: coin, 
-                quantity: quantity <= coins[coin].stock ? quantity : parseInt(coins[coin].stock)
+                quantity: quantity <= coinsList[coin].stock ? quantity : parseInt(coinsList[coin].stock)
             }
             pendingAmount = (pendingAmount - coinQuantity.quantity * coinValue).toFixed(2);
-            coinsList.push(coinQuantity);
+            coinsToReturnList.push(coinQuantity);
         }
     }
     if (pendingAmount > 0) {
-        coinsList = [];
+        coinsToReturnList = [];
     }
-    return coinsList;
+    return coinsToReturnList;
 } 
 
 //Actualiza la disponibilidad de monedas en caja con las devueltas y las recibidas 
-var updateCoinsStock = (returnedCoins, coins) => {
+var updateCoinsStock = (returnedCoins, coinsList) => {
     var coinsContainer = document.getElementById("cash-coins").getElementsByTagName("span");
     for (returnedCoin of returnedCoins) {
-        coins[returnedCoin.coin].stock = String(parseInt(coins[returnedCoin.coin].stock) - parseInt(returnedCoin.quantity));
+        coinsList[returnedCoin.coin].stock = String(parseInt(coinsList[returnedCoin.coin].stock) - parseInt(returnedCoin.quantity));
     }
     var i = 0;
-    for (coin in coins) {
-        coins[coin].stock = String(parseInt(coins[coin].stock) + parseInt(coins[coin].unitsToPay));
-        coinsContainer[i].innerText = coins[coin].stock;
+    for (coin in coinsList) {
+        coinsList[coin].stock = String(parseInt(coinsList[coin].stock) + parseInt(coinsList[coin].unitsToPay));
+        coinsContainer[i].innerText = coinsList[coin].stock;
         i++;
     }
 }
@@ -198,17 +198,17 @@ var displayCoinsToReturn = (returnedCoinList, coinsList) => {
 }
 
 //Proceso asociado al boton "priceToPay"
-var handlePayButtonClick = () => {
+var handlePayButtonClick = coinsList => {
     document.getElementById("returnCoinsContainer").innerHTML = "";
     var price = parseFloat(document.getElementById("priceToPay").innerText);
     var coinsAmount = parseFloat(document.getElementById("amountToPay").innerText);
     var returnAmount = (coinsAmount - price).toFixed(2);  
     var amountToReturnField = document.getElementById("amountToReturn");
-    var coinsToReturn = calculateCoinsToReturn(returnAmount);
+    var coinsToReturn = calculateCoinsToReturn(coinsList, returnAmount);
     if (coinsToReturn.length > 0) {
-        updateCoinsStock(coinsToReturn, coins);
+        updateCoinsStock(coinsToReturn, coinsList);
         amountToReturnField.innerText = "Billetes y monedas a devolver => " + returnAmount + "€";
-        displayCoinsToReturn(coinsToReturn, coins);
+        displayCoinsToReturn(coinsToReturn, coinsList);
     } else {
         amountToReturnField.innerText = "No se puede dar el cambio => " + returnAmount + "€";r
     } 
@@ -222,23 +222,23 @@ var createCoinStock = coin => {
 }
 
 //Evento asociado al change de los input de moneda
-var inputChangeEvent = (event, coins, coin) => {
+var inputChangeEvent = (event, coinsList, coin) => {
     var amountToPayField = document.getElementById("amountToPay");
     coin.unitsToPay = event.target.value;
-    amountToPayField.innerText = calculateAmountToPay(coins).toFixed(2);    
+    amountToPayField.innerText = calculateAmountToPay(coinsList).toFixed(2);    
     //Mantener boton pay-button desactivado
     var buttonToPay = document.getElementById("pay-button");
     buttonToPay.disabled = enoughMoneyToPay();
 }
 
 //Crea un input para introducir en numero de monedas para pagar
-var createCoinQuantity = (coins, coin) => {
+var createCoinQuantity = (coinsList, coin) => {
     var quantityInput = document.createElement("input");
     quantityInput.setAttribute("value", "0");
     quantityInput.setAttribute("type", "number");
     quantityInput.setAttribute("min","0");
 
-    quantityInput.addEventListener("change", (event) => {inputChangeEvent(event, coins, coin)});
+    quantityInput.addEventListener("change", (event) => {inputChangeEvent(event, coinsList, coin)});
     return addContainer(quantityInput, "coin-quantity");
 }
 
@@ -252,14 +252,14 @@ var createCoinImage = coin => {
 }
 
 //Genera una linea para una mondeda con su campo asociado (input o span)
-var createCoinLine = (coins, coin, area) => {
+var createCoinLine = (coinsList, coin, area) => {
     //Crear contenedor para cada moneda
     var coinContainer = document.createElement("div");
     coinContainer.setAttribute("class", "coin-container");
     //Añadir a la linea de la moneda un imput o un span dependiendo del area en la que se visualice 
     coinContainer.appendChild(createCoinImage(coin));
     if (area === "user") {
-        coinContainer.appendChild(createCoinQuantity(coins, coin));
+        coinContainer.appendChild(createCoinQuantity(coinsList, coin));
     } else {
         coinContainer.appendChild(createCoinStock(coin));
     }
@@ -269,8 +269,8 @@ var createCoinLine = (coins, coin, area) => {
 //Visualiza las monedas en las areas de user o de caja
 var displayCoins = (coinsList, area) => {
     var container = document.getElementById(area + "-coins");
-    for (coin in coins) {
-        container.appendChild(createCoinLine(coins, coins[coin], area));
+    for (coin in coinsList) {
+        container.appendChild(createCoinLine(coins, coinsList[coin], area));
     }
 }
 
@@ -285,8 +285,8 @@ cashCalculator(coins);
 
 //Inicializacion eventos de botones
 document.getElementById("pay-button").disabled = true;
-document.getElementById("price-button").addEventListener("click", handlePriceButtonClick);
-document.getElementById("pay-button").addEventListener("click", handlePayButtonClick);
+document.getElementById("price-button").addEventListener("click", () => {handlePriceButtonClick(coins)});
+document.getElementById("pay-button").addEventListener("click", () => {handlePayButtonClick(coins)});
 
 
 
