@@ -35,19 +35,19 @@ var myTeam = [
 
 var randomAvailabilityValue = () => Math.round(Math.random());
 
-var randomAvailabiltyGeneration = () => {
-    for (employee of myTeam) {
+var randomAvailabiltyGeneration = team => {
+    for (employee of team) {
         for (i = 0; i < employee.availability.length; i++) {
             employee.availability[i] = randomAvailabilityValue();
         }
     }
 } 
 
-var displayTeamAgenda = () => {
+var displayTeamAgenda = team => {
     console.log("T E A M    A G E N D A");
     console.log("======================");
 
-    for(employee of myTeam) {
+    for(employee of team) {
         console.log("Disponibilidad de " + employee.name);
         for (i = 0; i < employee.availability.length; i++) {
             console.log (WORK_HOURS[i] + ": " + (employee.availability[i] ? "Si" : "No"));
@@ -55,11 +55,11 @@ var displayTeamAgenda = () => {
     }
 }
 
-var findSlot = () => {
+var findSlot = team => {
     for (hour of WORK_HOURS) {
         var slotExists = true;
-        for (i = 0; i < myTeam.length && slotExists; i++) {
-            slotExists = slotExists && myTeam[i].availability[WORK_HOURS.indexOf(hour)];
+        for (i = 0; i < team.length && slotExists; i++) {
+            slotExists = slotExists && team[i].availability[WORK_HOURS.indexOf(hour)];
         }
         if (slotExists) {
             return hour;   
@@ -68,18 +68,18 @@ var findSlot = () => {
     return;
 }
 
-var agendaProcess = () => {
+var agendaProcess = team => {
     var freeSlot;
-    randomAvailabiltyGeneration();
-    displayTeamAgenda();
-    if (freeSlot = findSlot()) {
+    randomAvailabiltyGeneration(team);
+    displayTeamAgenda(team);
+    if (freeSlot = findSlot(myTeam)) {
         console.log("Hueco encontrado en el horario " + freeSlot);
     } else {
         console.log("Lo siento. No hay hueco en el equipo");
     }
 }
 
-agendaProcess();
+agendaProcess(myTeam);
 
 
 
